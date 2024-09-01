@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.energyapp.screens.ListaScreen
 import com.example.energyapp.ui.screens.CadastroScreen
 import com.example.energyapp.ui.screens.HomeScreen
-import com.example.energyapp.ui.screens.ListaScreen
 import com.example.energyapp.ui.screens.LoginScreen
 import com.example.energyapp.ui.screens.ProfileScreen
 import com.example.energyapp.ui.screens.SplashScreen

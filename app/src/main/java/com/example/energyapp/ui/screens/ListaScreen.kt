@@ -1,4 +1,4 @@
-package com.example.energyapp.ui.screens
+package com.example.energyapp.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,35 +12,53 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.energyapp.R
+import com.example.energyapp.repository.getAllGeradoras
+import com.example.energyapp.repository.getGeradoraByNome
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListaScreen(navController: NavController) {
-    var qtdBusca = 9
+
+    var geradoraState by remember {
+        mutableStateOf("")
+    }
+
+    var listGeradoraByNome by remember {
+        mutableStateOf(getGeradoraByNome(geradoraState))
+    }
+
+    var qtdBusca = listGeradoraByNome.size //9
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -63,17 +81,19 @@ fun ListaScreen(navController: NavController) {
                     .padding(top = 12.dp, start = 12.dp, end = 12.dp)
             ) {
                 // Campo de Pesquisa
-                TextField(
-                    value = "",
-                    onValueChange = {},
-                    placeholder = { Text("Buscar Distribuidora") },
+                OutlinedTextField(
+                    value = geradoraState,
+                    onValueChange = { geradoraState = it },
+                    placeholder = { Text("Buscar Geradora") },
                     trailingIcon = {
-//                        Icon(
-//                            painter = painterResource(
-//                                id = R.drawable.outline_search_24
-//                            ),
-//                            contentDescription = "Lupa para Buscar"
-//                        )
+                        IconButton(onClick = {
+                            listGeradoraByNome = getGeradoraByNome(geradoraState)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = ""
+                            )
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = TextFieldDefaults.colors(
@@ -85,47 +105,11 @@ fun ListaScreen(navController: NavController) {
                         disabledIndicatorColor = Color(0xFF4CAF50), // Para remover a linha quando desativado
                     )
                 )
-            }
-
-            Row(
-                modifier = Modifier
-                    .padding(top = 7.dp)
-            ) {
-                Row {
-                    Text(
-                        text = "Filtrar",
-                        color = Color(0xFF4CAF50),
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier
-                            .clickable {}
-                            .padding(start = 24.dp)
-                    )
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.outline_filter_alt_24),
-//                        contentDescription = "Filtrar",
-//                        modifier = Modifier
-//                            .padding(start = 4.dp)
-//                            .size(24.dp),
-//                        tint = Color(0xFF4CAF50),
-//                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 12.dp, bottom = 18.dp),
-                    horizontalArrangement = Arrangement.End
-
-                ) {
-                    Text(text = "Resultado da busca: ")
-                    Text(
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        text = "${qtdBusca}"
-                    )
-                }
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    thickness = 1.dp,
+                    color = Color.Gray
+                )
             }
 
             // Área de rolagem para os cards
@@ -139,7 +123,7 @@ fun ListaScreen(navController: NavController) {
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp)
                 ) {
-                    items(9) {
+                    items(listGeradoraByNome) {
                         Card(
                             modifier = Modifier
                                 //.offset(y = (-30).dp)
@@ -149,6 +133,10 @@ fun ListaScreen(navController: NavController) {
                             elevation = CardDefaults.cardElevation(20.dp)
                         ) {
                             // Conteúdo do Card
+                            Text("Nome: ${it.nome}")
+                            Text("Localização: ${it.localizacao}")
+                            Text("Modalidade: ${it.modalidadeGeracao}")
+                            Text("Potência: ${it.potenciaGeracao}")
                         }
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 8.dp),
